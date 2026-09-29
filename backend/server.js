@@ -10,6 +10,7 @@ import app from './app.js';
 import connectDB from './src/config/db.js';
 import env from './src/config/env.js';
 import logger from './src/utils/logger.js';
+import { startScheduler, stopScheduler } from './src/jobs/scheduler.js';
 
 // Connect to DB, then start listening
 const startServer = async () => {
@@ -21,11 +22,17 @@ const startServer = async () => {
       env: env.NODE_ENV,
       url: `http://localhost:${env.PORT}`,
     });
+
+    // Start background cron jobs
+    if (env.NODE_ENV !== 'test') {
+      startScheduler();
+    }
   });
 
   // ── Graceful shutdown ────────────────────────────────────────────────────
   const shutdown = (signal) => {
     logger.info(`${signal} received — shutting down gracefully`);
+    stopScheduler();
     server.close(() => {
       logger.info('HTTP server closed');
       process.exit(0);

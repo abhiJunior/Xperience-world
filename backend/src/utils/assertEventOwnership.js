@@ -15,7 +15,7 @@ const assertEventOwnership = async (eventId, userId) => {
   if (!event) {
     throw new ApiError(404, 'Event not found');
   }
-  if (event.owner.toString() !== userId) {
+  if (String(event.owner) !== String(userId)) {
     throw new ApiError(404, 'Event not found'); // intentionally 404, not 403
   }
   return event;

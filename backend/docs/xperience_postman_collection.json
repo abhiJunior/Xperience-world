@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "The Xperience Assistant API",
+    "description": "Postman Collection for The Xperience Assistant API — Event Management AI Assistant",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "eventId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aditi Sharma\",\n  \"email\": \"demo@xperience.com\",\n  \"password\": \"Password123!\",\n  \"role\": \"manager\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@xperience.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List Events",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] }
+          }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"The Royal Jaipur Wedding: Aarav & Ananya\",\n  \"type\": \"wedding\",\n  \"startDate\": \"2026-11-20T00:00:00.000Z\",\n  \"endDate\": \"2026-11-23T00:00:00.000Z\",\n  \"city\": \"Jaipur, Rajasthan\",\n  \"budget\": { \"total\": 6500000, \"currency\": \"INR\" }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] }
+          }
+        },
+        {
+          "name": "Get Event Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}/dashboard", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}", "dashboard"] }
+          }
+        },
+        {
+          "name": "Get Event Readiness",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}/readiness", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}", "readiness"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Chat & Decisions",
+      "item": [
+        {
+          "name": "Send Chat Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Sangeet venue finalised, decor vendor pending, need transport for 150 guests\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}/chat", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}", "chat"] }
+          }
+        },
+        {
+          "name": "Confirm Proposed Action",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Approved by lead event planner\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}/chat/actions/ACTION_ID_HERE/confirm", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}", "chat", "actions", "ACTION_ID_HERE", "confirm"] }
+          }
+        },
+        {
+          "name": "What-If Simulation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario\": \"What if decor vendor cancels and 50 extra guests arrive?\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/{{eventId}}/chat/what-if", "host": ["{{baseUrl}}"], "path": ["events", "{{eventId}}", "chat", "what-if"] }
+          }
+        }
+      ]
+    }
+  ]
+}

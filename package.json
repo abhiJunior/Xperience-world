@@ -10,6 +10,7 @@
     "lint": "eslint backend/src backend/app.js backend/server.js",
     "lint:fix": "eslint backend/src backend/app.js backend/server.js --fix",
     "format": "prettier --write \"backend/**/*.js\"",
+    "seed": "node backend/src/seed/seed.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
     "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch"
   },
@@ -52,9 +53,6 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "extensionsToTreatAsEsm": [
-      ".js"
-    ],
     "testMatch": [
       "**/__tests__/**/*.test.js"
     ]
