@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 
 import env from './src/config/env.js';
 import logger from './src/utils/logger.js';
@@ -35,6 +36,9 @@ app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev', { stream: mor
 // ── Body parsers ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// ── Cookie parser (needed for HttpOnly refresh-token cookie) ─────────────────
+app.use(cookieParser());
 
 // ── Global rate limit ─────────────────────────────────────────────────────────
 app.use('/api', apiLimiter);

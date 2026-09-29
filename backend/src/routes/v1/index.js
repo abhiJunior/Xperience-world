@@ -1,11 +1,12 @@
 /**
- * Versioned API router barrel.
- * Each resource router is mounted here; controllers are imported in Step 4+.
- *
- * Only the health-check route is active in Step 1.
+ * Versioned API router barrel — /api/v1
+ * Resource routers are mounted here.
  */
 import { Router } from 'express';
 import { sendSuccess } from '../../utils/response.js';
+
+import authRouter from './auth.js';
+import eventRouter from './events.js';
 
 const v1Router = Router();
 
@@ -19,14 +20,8 @@ v1Router.get('/health', (req, res) => {
   });
 });
 
-/*
- * Resource routers are plugged in progressively in later steps:
- *
- * Step 3:  import authRouter from './auth.js';
- *          v1Router.use('/auth', authRouter);
- *
- * Step 4:  v1Router.use('/events', eventRouter);
- *          ...etc
- */
+// ── Mounted resource routers ──────────────────────────────────────────────────
+v1Router.use('/auth', authRouter);
+v1Router.use('/events', eventRouter);
 
 export default v1Router;

@@ -26,8 +26,17 @@ const validate =
       return next(new ApiError(422, 'Validation failed', errors));
     }
 
-    // Replace the source with the parsed (and potentially transformed) data
-    req[source] = result.data;
+    // In Express 5, req.query is a getter property.
+    // We mutate req.body directly, and for query/params we attach validated properties.
+    if (source === 'body') {
+      req.body = result.data;
+    } else if (source === 'query') {
+      req.validatedQuery = result.data;
+      Object.assign(req.query, result.data);
+    } else if (source === 'params') {
+      req.validatedParams = result.data;
+      Object.assign(req.params, result.data);
+    }
     return next();
   };
 

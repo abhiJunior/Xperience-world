@@ -35,6 +35,7 @@ const eventBaseShape = {
     .object({
       total: z.number().min(0).optional().default(0),
       spent: z.number().min(0).optional().default(0),
+      currency: z.string().max(10).trim().optional().default('INR'),
     })
     .optional()
     .default({}),

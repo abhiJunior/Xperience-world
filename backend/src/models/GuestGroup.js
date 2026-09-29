@@ -59,7 +59,7 @@ const guestGroupSchema = new Schema(
   { timestamps: true },
 );
 
-guestGroupSchema.index({ event: 1 });
+// event index is created by `index: true` on the field definition
 
 const GuestGroup = model('GuestGroup', guestGroupSchema);
 export default GuestGroup;

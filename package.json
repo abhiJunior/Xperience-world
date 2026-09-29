@@ -13,13 +13,19 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
     "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch"
   },
-  "keywords": ["event-management", "ai", "express", "nodejs"],
+  "keywords": [
+    "event-management",
+    "ai",
+    "express",
+    "nodejs"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
@@ -46,7 +52,11 @@
   "jest": {
     "testEnvironment": "node",
     "transform": {},
-    "extensionsToTreatAsEsm": [".js"],
-    "testMatch": ["**/__tests__/**/*.test.js"]
+    "extensionsToTreatAsEsm": [
+      ".js"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
   }
 }
