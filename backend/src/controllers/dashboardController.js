@@ -11,6 +11,8 @@ import assertEventOwnership from '../utils/assertEventOwnership.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { sendSuccess } from '../utils/response.js';
 
+import GuestGroup from '../models/GuestGroup.js';
+
 export const getEventReadiness = asyncHandler(async (req, res) => {
   const readiness = await readinessEngine.calculateEventReadiness(req.user._id, req.params.eventId);
   sendSuccess(res, 200, readiness);
@@ -31,7 +33,7 @@ export const getEventDashboard = asyncHandler(async (req, res) => {
   await riskEngine.evaluateEventRisks(userId, eventId);
 
   // Parallel fetch of all dashboard elements
-  const [readiness, subEvents, pendingTasks, topRisks, vendors, pendingSuggestions] = await Promise.all([
+  const [readiness, subEvents, pendingTasks, topRisks, vendors, pendingSuggestions, guestGroups] = await Promise.all([
     readinessEngine.calculateEventReadiness(userId, eventId),
     SubEvent.find({ event: eventId }).sort({ date: 1, startTime: 1 }).limit(5).lean(),
     Task.find({ event: eventId, status: { $ne: 'done' } })
@@ -44,7 +46,12 @@ export const getEventDashboard = asyncHandler(async (req, res) => {
       .lean(),
     Vendor.find({ event: eventId }).lean(),
     Suggestion.find({ event: eventId, status: 'pending' }).limit(5).lean(),
+    GuestGroup.find({ event: eventId }).lean(),
   ]);
+
+  const totalGroupGuests = guestGroups.reduce((acc, g) => acc + (g.count || 0), 0);
+  const expectedGuests = Math.max(event.expectedGuests || 0, totalGroupGuests);
+  const confirmedGuests = totalGroupGuests > 0 ? totalGroupGuests : (event.confirmedGuests || 0);
 
   const dashboard = {
     event: {
@@ -56,6 +63,8 @@ export const getEventDashboard = asyncHandler(async (req, res) => {
       endDate: event.endDate,
       city: event.city,
       budget: event.budget,
+      expectedGuests,
+      confirmedGuests,
     },
     readiness,
     subEvents,

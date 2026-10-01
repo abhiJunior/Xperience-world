@@ -13,6 +13,9 @@ import ApiError from '../../utils/ApiError.js';
 import logger from '../../utils/logger.js';
 import assertEventOwnership from '../../utils/assertEventOwnership.js';
 
+import { TASK_CATEGORIES } from '../../models/Task.js';
+import { VENDOR_CATEGORIES, VENDOR_STATUSES } from '../../models/Vendor.js';
+
 /**
  * Executes a confirmed proposed action against the database, updates the conversation
  * turn status, records an activity log, and runs a fresh risk evaluation.
@@ -66,9 +69,14 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
   const { type, payload = {} } = foundAction;
 
   switch (type) {
-    case 'create_sub_event':
-      appliedResult = await subEventService.createSubEvent(userId, eventId, payload);
+    case 'create_sub_event': {
+      const subPayload = { ...payload };
+      if (subPayload.name && subPayload.name.length > 150) {
+        subPayload.name = subPayload.name.slice(0, 147) + '...';
+      }
+      appliedResult = await subEventService.createSubEvent(userId, eventId, subPayload);
       break;
+    }
 
     case 'update_sub_event': {
       const { subEventId, ...dto } = payload;
@@ -76,9 +84,17 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
       break;
     }
 
-    case 'create_task':
-      appliedResult = await taskService.createTask(userId, eventId, payload);
+    case 'create_task': {
+      const taskPayload = { ...payload };
+      if (taskPayload.title && taskPayload.title.length > 250) {
+        taskPayload.title = taskPayload.title.slice(0, 247) + '...';
+      }
+      if (!taskPayload.category || !TASK_CATEGORIES.includes(taskPayload.category)) {
+        taskPayload.category = 'other';
+      }
+      appliedResult = await taskService.createTask(userId, eventId, taskPayload);
       break;
+    }
 
     case 'update_task': {
       const { taskId, ...dto } = payload;
@@ -86,9 +102,20 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
       break;
     }
 
-    case 'create_vendor':
-      appliedResult = await vendorService.createVendor(userId, eventId, payload);
+    case 'create_vendor': {
+      const vendorPayload = { ...payload };
+      if (vendorPayload.name && vendorPayload.name.length > 200) {
+        vendorPayload.name = vendorPayload.name.slice(0, 197) + '...';
+      }
+      if (!vendorPayload.category || !VENDOR_CATEGORIES.includes(vendorPayload.category)) {
+        vendorPayload.category = 'other';
+      }
+      if (vendorPayload.status && !VENDOR_STATUSES.includes(vendorPayload.status)) {
+        vendorPayload.status = 'shortlisted';
+      }
+      appliedResult = await vendorService.createVendor(userId, eventId, vendorPayload);
       break;
+    }
 
     case 'update_vendor': {
       const { vendorId, ...dto } = payload;
@@ -96,9 +123,10 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
       break;
     }
 
-    case 'create_guest_group':
+    case 'create_guest_group': {
       appliedResult = await guestGroupService.createGuestGroup(userId, eventId, payload);
       break;
+    }
 
     case 'update_guest_group': {
       const { groupId, ...dto } = payload;
@@ -106,9 +134,13 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
       break;
     }
 
-    case 'create_requirement':
-      appliedResult = await requirementService.createRequirement(userId, eventId, payload);
+    case 'create_requirement': {
+      const reqPayload = { ...payload };
+      reqPayload.required = Number(reqPayload.required) || 0;
+      reqPayload.provided = Number(reqPayload.provided) || 0;
+      appliedResult = await requirementService.createRequirement(userId, eventId, reqPayload);
       break;
+    }
 
     case 'update_requirement': {
       const { reqId, ...dto } = payload;
@@ -130,6 +162,9 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
   foundAction.userNote = userNote;
 
   if (targetMessage) {
+    targetMessage.pendingActions = (targetMessage.pendingActions || []).filter(
+      (a) => a.actionId !== actionId
+    );
     targetMessage.appliedActions = targetMessage.appliedActions || [];
     targetMessage.appliedActions.push({
       ...foundAction,
@@ -138,6 +173,7 @@ export const confirmAction = async (userId, eventId, actionId, userNote = '') =>
   }
 
   if (conversation) {
+    conversation.markModified('messages');
     await conversation.save();
   }
   if (targetSuggestion) {
@@ -220,7 +256,14 @@ export const rejectAction = async (userId, eventId, actionId, userNote = '') => 
   foundAction.rejectedAt = new Date();
   foundAction.userNote = userNote;
 
+  if (targetMessage) {
+    targetMessage.pendingActions = (targetMessage.pendingActions || []).filter(
+      (a) => a.actionId !== actionId
+    );
+  }
+
   if (conversation) {
+    conversation.markModified('messages');
     await conversation.save();
   }
   if (targetSuggestion) {

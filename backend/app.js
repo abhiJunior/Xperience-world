@@ -17,15 +17,33 @@ const app = express();
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-const allowedOrigins = env.CORS_ORIGINS.split(',').map((o) => o.trim());
+const allowedOrigins = env.CORS_ORIGINS.split(',').map((o) => o.trim().replace(/\/+$/, ''));
+
 app.use(
   cors({
     origin: (origin, cb) => {
-      // Allow same-origin requests (no Origin header) and whitelisted origins
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      // Allow requests with no origin (e.g. mobile apps, curl, Postman, same-origin)
+      if (!origin) return cb(null, true);
+
+      const normalizedOrigin = origin.replace(/\/+$/, '');
+
+      // In development, automatically permit any localhost / 127.0.0.1 port
+      if (
+        env.NODE_ENV === 'development' &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)
+      ) {
+        return cb(null, true);
+      }
+
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return cb(null, true);
+      }
+
       cb(new ApiError(403, `CORS policy: origin '${origin}' not allowed`));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   }),
 );
 

@@ -74,6 +74,15 @@ export const processChatMessage = async (userId, eventId, messageContent) => {
     systemPrompt: SYSTEM_PROMPT,
     userPrompt: messageContent,
     eventContext,
+    rawContext: {
+      event,
+      subEvents,
+      tasks,
+      vendors,
+      guestGroups,
+      requirements,
+      risks,
+    },
   });
 
   // 3. For each proposed action, run deterministic impact analysis

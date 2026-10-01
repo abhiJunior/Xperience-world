@@ -1,0 +1,192 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* ── Design Tokens ──────────────────────────────────────────────────────────── */
+@theme {
+  /* Colors */
+  --color-page: #F8F9FB;
+  --color-card: #FFFFFF;
+  --color-border: #E8EAEE;
+  --color-border-subtle: #F0F1F4;
+
+  /* Accent - Indigo */
+  --color-accent: #4F46E5;
+  --color-accent-50: #EEF2FF;
+  --color-accent-100: #E0E7FF;
+  --color-accent-200: #C7D2FE;
+  --color-accent-500: #6366F1;
+  --color-accent-600: #4F46E5;
+  --color-accent-700: #4338CA;
+  --color-accent-hover: #4338CA;
+
+  /* Text */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94A3B8;
+  --color-text-inverse: #FFFFFF;
+
+  /* Status colors */
+  --color-success: #16A34A;
+  --color-success-bg: #F0FDF4;
+  --color-success-border: #BBF7D0;
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+  --color-info: #0284C7;
+  --color-info-bg: #F0F9FF;
+  --color-info-border: #BAE6FD;
+
+  /* Severity */
+  --color-critical: #DC2626;
+  --color-critical-bg: #FEF2F2;
+  --color-high: #D97706;
+  --color-high-bg: #FFFBEB;
+  --color-medium: #0284C7;
+  --color-medium-bg: #F0F9FF;
+  --color-low: #16A34A;
+  --color-low-bg: #F0FDF4;
+
+  /* Slate for todo */
+  --color-slate-500: #64748B;
+  --color-slate-bg: #F8FAFC;
+
+  /* Sidebar */
+  --color-sidebar: #1E1B4B;
+  --color-sidebar-hover: rgba(255,255,255,0.07);
+  --color-sidebar-active: rgba(99,102,241,0.25);
+  --color-sidebar-text: rgba(255,255,255,0.65);
+  --color-sidebar-text-active: #FFFFFF;
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-pill: 9999px;
+  --radius-input: 8px;
+  --radius-modal: 16px;
+
+  /* Shadow */
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,0.06), 0 1px 2px -1px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 4px 12px 0 rgba(0,0,0,0.10);
+  --shadow-modal: 0 20px 60px -10px rgba(0,0,0,0.18);
+  --shadow-panel: -4px 0 24px 0 rgba(0,0,0,0.08);
+
+  /* Font */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+/* ── Base reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background: var(--color-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
+
+/* ── Focus styles ───────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Transitions ────────────────────────────────────────────────────────────── */
+.transition-base {
+  transition: all 150ms ease;
+}
+
+/* ── Skeleton animation ─────────────────────────────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: var(--color-border-subtle);
+  border-radius: 6px;
+}
+
+/* ── Typing dots animation ──────────────────────────────────────────────────── */
+@keyframes typing-dot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.typing-dot:nth-child(1) { animation: typing-dot 1.2s ease-in-out infinite; }
+.typing-dot:nth-child(2) { animation: typing-dot 1.2s ease-in-out 0.2s infinite; }
+.typing-dot:nth-child(3) { animation: typing-dot 1.2s ease-in-out 0.4s infinite; }
+
+/* ── Slide animations ───────────────────────────────────────────────────────── */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-in-right { animation: slide-in-right 250ms ease-out; }
+.animate-slide-in-up { animation: slide-in-up 200ms ease-out; }
+.animate-fade-in { animation: fade-in 200ms ease-out; }
+
+/* ── Progress ring ──────────────────────────────────────────────────────────── */
+.progress-ring-circle {
+  transition: stroke-dashoffset 600ms ease;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+/* ── Toast container ────────────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  animation: slide-in-up 200ms ease-out;
+}
+
+/* ── Kanban column drop highlight ───────────────────────────────────────────── */
+.kanban-col-over {
+  background: var(--color-accent-50);
+  border-color: var(--color-accent-200);
+}
