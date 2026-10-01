@@ -11,8 +11,8 @@ import ApiError from '../utils/ApiError.js';
  * @returns {import('express').RequestHandler}
  */
 export const createRateLimiter = ({
-  windowMs = 15 * 60 * 1000,
-  max = 100,
+  windowMs = 1 * 60 * 1000,
+  max = 10000,
   message = 'Too many requests from this IP, please try again later',
 } = {}) =>
   rateLimit({
@@ -25,18 +25,18 @@ export const createRateLimiter = ({
     },
   });
 
-/** General API rate limiter — 100 req / 15 min */
+/** General API rate limiter — 10000 req / 1 min */
 export const apiLimiter = createRateLimiter();
 
-/** Strict limiter for the chat endpoint — 30 req / 15 min */
+/** Strict limiter for the chat endpoint — 3000 req / 1 min */
 export const chatLimiter = createRateLimiter({
-  max: 30,
+  max: 3000,
   message: 'Chat rate limit exceeded. Please wait before sending another message.',
 });
 
-/** Strict limiter for auth routes — 10 req / 15 min */
+/** Strict limiter for auth routes — 1000 req / 1 min */
 export const authLimiter = createRateLimiter({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
+  windowMs: 1 * 60 * 1000,
+  max: 1000,
   message: 'Too many authentication attempts. Please try again later.',
 });
